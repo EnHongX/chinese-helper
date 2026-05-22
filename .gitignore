@@ -1,0 +1,6 @@
+data/*.sqlite3
+data/*.sqlite3-*
+data/vendor/
+data/generated/chars/
+data/generated/manifest.json
+__pycache__/

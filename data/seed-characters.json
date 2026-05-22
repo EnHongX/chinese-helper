@@ -1,0 +1,1175 @@
+[
+  {
+    "character": "小",
+    "pinyin": "xiǎo",
+    "tone": "ˇ",
+    "initial": "x",
+    "final": "iǎo",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "竖钩",
+        "mark": "亅"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "点",
+        "mark": "丶"
+      }
+    ],
+    "radical": "小",
+    "structure": "独体字",
+    "meaning": "本义指细小、微小，也可以表示年纪小或程度轻。",
+    "antonyms": [
+      "大"
+    ],
+    "synonyms": [
+      "细",
+      "微"
+    ],
+    "words": [
+      "小学",
+      "小心",
+      "大小",
+      "小朋友",
+      "小鸟"
+    ],
+    "sentences": {
+      "beginner": "小鸟在树上唱歌。",
+      "intermediate": "我们要从小养成爱读书的好习惯。",
+      "advanced": "虽然这件事很小，但能看出他认真负责的态度。"
+    },
+    "measureWords": [
+      "一个小朋友",
+      "一只小鸟",
+      "一件小事"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "学",
+    "pinyin": "xué",
+    "tone": "ˊ",
+    "initial": "x",
+    "final": "ué",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "横撇",
+        "mark": "乛"
+      },
+      {
+        "name": "横钩",
+        "mark": "乛"
+      },
+      {
+        "name": "竖钩",
+        "mark": "亅"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "子",
+    "structure": "上下结构",
+    "meaning": "本义指学习、效法，后来也指学问和学校。",
+    "antonyms": [],
+    "synonyms": [
+      "习"
+    ],
+    "words": [
+      "学习",
+      "学校",
+      "学生",
+      "同学",
+      "小学"
+    ],
+    "sentences": {
+      "beginner": "我爱学习语文。",
+      "intermediate": "同学们在学校里认真学习新知识。",
+      "advanced": "学习不只是记住答案，还要理解其中的道理。"
+    },
+    "measureWords": [
+      "一所学校",
+      "一名学生",
+      "一门学科"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "语",
+    "pinyin": "yǔ",
+    "tone": "ˇ",
+    "initial": "y",
+    "final": "ǔ",
+    "syllableType": "整体认读音节",
+    "strokes": [
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "横折提",
+        "mark": "㇊"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横折",
+        "mark": "𠃍"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横折",
+        "mark": "𠃍"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "讠",
+    "structure": "左右结构",
+    "meaning": "本义指说话、言语，也指语言文字。",
+    "antonyms": [],
+    "synonyms": [
+      "言",
+      "话"
+    ],
+    "words": [
+      "语文",
+      "语言",
+      "词语",
+      "成语",
+      "汉语"
+    ],
+    "sentences": {
+      "beginner": "我喜欢上语文课。",
+      "intermediate": "老师教我们把词语用在句子里。",
+      "advanced": "学好语文，能帮助我们更清楚地表达想法。"
+    },
+    "measureWords": [
+      "一句话语",
+      "一种语言",
+      "一门语文课"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "文",
+    "pinyin": "wén",
+    "tone": "ˊ",
+    "initial": "w",
+    "final": "én",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "文",
+    "structure": "独体字",
+    "meaning": "本义指花纹、纹理，后来指文字、文章和文化。",
+    "antonyms": [],
+    "synonyms": [
+      "字"
+    ],
+    "words": [
+      "语文",
+      "文字",
+      "文化",
+      "作文",
+      "课文"
+    ],
+    "sentences": {
+      "beginner": "我会读这篇课文。",
+      "intermediate": "写作文时要把句子写通顺。",
+      "advanced": "文字记录了人们的生活，也传承了文化。"
+    },
+    "measureWords": [
+      "一篇课文",
+      "一个文字",
+      "一种文化"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "人",
+    "pinyin": "rén",
+    "tone": "ˊ",
+    "initial": "r",
+    "final": "én",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "人",
+    "structure": "独体字",
+    "meaning": "本义指能制造工具并使用语言劳动的人。",
+    "antonyms": [],
+    "synonyms": [],
+    "words": [
+      "人民",
+      "大人",
+      "个人",
+      "好人",
+      "工人"
+    ],
+    "sentences": {
+      "beginner": "教室里有很多人。",
+      "intermediate": "每个人都要爱护公共物品。",
+      "advanced": "一个诚实的人，能赢得大家的信任。"
+    },
+    "measureWords": [
+      "一个人",
+      "一名工人",
+      "一位大人"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "大",
+    "pinyin": "dà",
+    "tone": "ˋ",
+    "initial": "d",
+    "final": "à",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "大",
+    "structure": "独体字",
+    "meaning": "本义指人的正面形状，引申为面积、数量或程度大。",
+    "antonyms": [
+      "小"
+    ],
+    "synonyms": [
+      "巨"
+    ],
+    "words": [
+      "大家",
+      "大小",
+      "大人",
+      "大山",
+      "长大"
+    ],
+    "sentences": {
+      "beginner": "大山很高。",
+      "intermediate": "大家一起把教室打扫干净。",
+      "advanced": "长大以后，我想用知识帮助更多的人。"
+    },
+    "measureWords": [
+      "一座大山",
+      "一个大人",
+      "一件大事"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "中",
+    "pinyin": "zhōng / zhòng",
+    "tone": "ˉ / ˋ",
+    "initial": "zh",
+    "final": "ōng / òng",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横折",
+        "mark": "𠃍"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      }
+    ],
+    "radical": "丨",
+    "structure": "独体字",
+    "meaning": "本义指中间位置，也可表示符合、受到。",
+    "antonyms": [
+      "外",
+      "旁"
+    ],
+    "synonyms": [
+      "内"
+    ],
+    "words": [
+      "中国",
+      "中间",
+      "中心",
+      "看中",
+      "中午"
+    ],
+    "sentences": {
+      "beginner": "红旗在中间。",
+      "intermediate": "中国有许多美丽的山河。",
+      "advanced": "做题时要抓住句子的中心意思。"
+    },
+    "measureWords": [
+      "一个中心",
+      "一所中学",
+      "一段中间"
+    ],
+    "polyphonic": [
+      "zhōng：中间、中国",
+      "zhòng：中奖、看中"
+    ]
+  },
+  {
+    "character": "国",
+    "pinyin": "guó",
+    "tone": "ˊ",
+    "initial": "g",
+    "final": "uó",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横折",
+        "mark": "𠃍"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "囗",
+    "structure": "全包围结构",
+    "meaning": "本义指有土地、人民和政权的国家。",
+    "antonyms": [],
+    "synonyms": [
+      "邦"
+    ],
+    "words": [
+      "中国",
+      "国家",
+      "祖国",
+      "国旗",
+      "国王"
+    ],
+    "sentences": {
+      "beginner": "我爱祖国。",
+      "intermediate": "国旗在操场上高高飘扬。",
+      "advanced": "每个人都可以用自己的努力为国家增光。"
+    },
+    "measureWords": [
+      "一个国家",
+      "一面国旗",
+      "一位国王"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "一",
+    "pinyin": "yī",
+    "tone": "ˉ",
+    "initial": "y",
+    "final": "ī",
+    "syllableType": "整体认读音节",
+    "strokes": [
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "一",
+    "structure": "独体字",
+    "meaning": "本义指最小的正整数，也表示相同、整个或一次。",
+    "antonyms": [
+      "多"
+    ],
+    "synonyms": [
+      "单"
+    ],
+    "words": [
+      "一个",
+      "一天",
+      "第一",
+      "一起",
+      "一心"
+    ],
+    "sentences": {
+      "beginner": "我有一本书。",
+      "intermediate": "我们一起去操场做操。",
+      "advanced": "做事情要一心一意，不能三心二意。"
+    },
+    "measureWords": [
+      "一本书",
+      "一只笔",
+      "一件事"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "二",
+    "pinyin": "èr",
+    "tone": "ˋ",
+    "initial": "暂无",
+    "final": "èr",
+    "syllableType": "特殊韵母音节",
+    "strokes": [
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "二",
+    "structure": "独体字",
+    "meaning": "本义指数字二，也表示第二个。",
+    "antonyms": [],
+    "synonyms": [
+      "两"
+    ],
+    "words": [
+      "二月",
+      "二人",
+      "第二",
+      "二胡",
+      "二十"
+    ],
+    "sentences": {
+      "beginner": "桌上有二本书。",
+      "intermediate": "二月里，天气还是有点冷。",
+      "advanced": "比赛中，他第二个冲过终点。"
+    },
+    "measureWords": [
+      "二本书",
+      "二个人",
+      "二支笔"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "三",
+    "pinyin": "sān",
+    "tone": "ˉ",
+    "initial": "s",
+    "final": "ān",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "一",
+    "structure": "独体字",
+    "meaning": "本义指数字三，也可表示多次或多方面。",
+    "antonyms": [],
+    "synonyms": [],
+    "words": [
+      "三个",
+      "三月",
+      "三角",
+      "三天",
+      "三心二意"
+    ],
+    "sentences": {
+      "beginner": "我有三支铅笔。",
+      "intermediate": "三月到了，校园里的花开了。",
+      "advanced": "学习时不能三心二意，要专心听讲。"
+    },
+    "measureWords": [
+      "三支笔",
+      "三朵花",
+      "三个苹果"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "日",
+    "pinyin": "rì",
+    "tone": "ˋ",
+    "initial": "r",
+    "final": "ì",
+    "syllableType": "整体认读音节",
+    "strokes": [
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横折",
+        "mark": "𠃍"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "日",
+    "structure": "独体字",
+    "meaning": "本义指太阳，也表示一天或日期。",
+    "antonyms": [
+      "月",
+      "夜"
+    ],
+    "synonyms": [
+      "太阳"
+    ],
+    "words": [
+      "日子",
+      "日月",
+      "生日",
+      "今日",
+      "日出"
+    ],
+    "sentences": {
+      "beginner": "今天是我的生日。",
+      "intermediate": "清晨，太阳从东方日出。",
+      "advanced": "我们要珍惜每一个努力学习的日子。"
+    },
+    "measureWords": [
+      "一轮红日",
+      "一个日子",
+      "一天日期"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "月",
+    "pinyin": "yuè",
+    "tone": "ˋ",
+    "initial": "y",
+    "final": "uè",
+    "syllableType": "整体认读音节",
+    "strokes": [
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "横折钩",
+        "mark": "𠃌"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "月",
+    "structure": "独体字",
+    "meaning": "本义指月亮，也表示月份。",
+    "antonyms": [
+      "日"
+    ],
+    "synonyms": [
+      "月亮"
+    ],
+    "words": [
+      "月亮",
+      "月光",
+      "日月",
+      "明月",
+      "一月"
+    ],
+    "sentences": {
+      "beginner": "月亮挂在天上。",
+      "intermediate": "柔和的月光照在小路上。",
+      "advanced": "明月升起时，院子里显得格外安静。"
+    },
+    "measureWords": [
+      "一轮明月",
+      "一个月",
+      "一道月光"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "水",
+    "pinyin": "shuǐ",
+    "tone": "ˇ",
+    "initial": "sh",
+    "final": "uǐ",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "竖钩",
+        "mark": "亅"
+      },
+      {
+        "name": "横撇",
+        "mark": "乛"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "水",
+    "structure": "独体字",
+    "meaning": "本义指液体的水，是生命需要的重要东西。",
+    "antonyms": [
+      "火"
+    ],
+    "synonyms": [],
+    "words": [
+      "水果",
+      "水面",
+      "喝水",
+      "水花",
+      "山水"
+    ],
+    "sentences": {
+      "beginner": "我每天都喝水。",
+      "intermediate": "小鱼在清清的水里游来游去。",
+      "advanced": "节约用水，是每个人都应该做到的事。"
+    },
+    "measureWords": [
+      "一杯水",
+      "一滴水",
+      "一瓶水"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "火",
+    "pinyin": "huǒ",
+    "tone": "ˇ",
+    "initial": "h",
+    "final": "uǒ",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "点",
+        "mark": "丶"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "火",
+    "structure": "独体字",
+    "meaning": "本义指物体燃烧时发出的光和热。",
+    "antonyms": [
+      "水"
+    ],
+    "synonyms": [
+      "焰"
+    ],
+    "words": [
+      "火山",
+      "大火",
+      "火车",
+      "火花",
+      "生火"
+    ],
+    "sentences": {
+      "beginner": "火车开来了。",
+      "intermediate": "我们不能随便玩火。",
+      "advanced": "夜空中的火花像一朵朵明亮的花。"
+    },
+    "measureWords": [
+      "一团火",
+      "一列火车",
+      "一点火花"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "木",
+    "pinyin": "mù",
+    "tone": "ˋ",
+    "initial": "m",
+    "final": "ù",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "木",
+    "structure": "独体字",
+    "meaning": "本义指树木，也指木头、木料。",
+    "antonyms": [],
+    "synonyms": [
+      "树"
+    ],
+    "words": [
+      "木头",
+      "树木",
+      "木马",
+      "木耳",
+      "木工"
+    ],
+    "sentences": {
+      "beginner": "山上有很多树木。",
+      "intermediate": "爷爷用木头做了一把小椅子。",
+      "advanced": "保护树木，就是保护我们生活的环境。"
+    },
+    "measureWords": [
+      "一棵树木",
+      "一块木头",
+      "一匹木马"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "山",
+    "pinyin": "shān",
+    "tone": "ˉ",
+    "initial": "sh",
+    "final": "ān",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "竖折",
+        "mark": "㇄"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      }
+    ],
+    "radical": "山",
+    "structure": "独体字",
+    "meaning": "本义指地面上高高隆起的部分。",
+    "antonyms": [
+      "水"
+    ],
+    "synonyms": [],
+    "words": [
+      "大山",
+      "山水",
+      "火山",
+      "上山",
+      "山羊"
+    ],
+    "sentences": {
+      "beginner": "远处有一座山。",
+      "intermediate": "春天，我们一起去上山看花。",
+      "advanced": "站在山顶上，可以看到远处美丽的村庄。"
+    },
+    "measureWords": [
+      "一座山",
+      "一只山羊",
+      "一幅山水画"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "上",
+    "pinyin": "shàng",
+    "tone": "ˋ",
+    "initial": "sh",
+    "final": "àng",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "一",
+    "structure": "独体字",
+    "meaning": "本义指位置在高处，也表示去、到或开始。",
+    "antonyms": [
+      "下"
+    ],
+    "synonyms": [
+      "高"
+    ],
+    "words": [
+      "上学",
+      "上面",
+      "上午",
+      "上山",
+      "向上"
+    ],
+    "sentences": {
+      "beginner": "我每天去上学。",
+      "intermediate": "书包放在桌子上面。",
+      "advanced": "遇到困难时，我们要保持向上的精神。"
+    },
+    "measureWords": [
+      "一节上午课",
+      "一次上山",
+      "一个上面位置"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "下",
+    "pinyin": "xià",
+    "tone": "ˋ",
+    "initial": "x",
+    "final": "ià",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖",
+        "mark": "丨"
+      },
+      {
+        "name": "点",
+        "mark": "丶"
+      }
+    ],
+    "radical": "一",
+    "structure": "独体字",
+    "meaning": "本义指位置在低处，也表示降落、离开或结束。",
+    "antonyms": [
+      "上"
+    ],
+    "synonyms": [
+      "低"
+    ],
+    "words": [
+      "下面",
+      "下雨",
+      "上下",
+      "下课",
+      "下山"
+    ],
+    "sentences": {
+      "beginner": "今天下雨了。",
+      "intermediate": "下课后，同学们排队去操场。",
+      "advanced": "山路很滑，下山时要格外小心。"
+    },
+    "measureWords": [
+      "一场雨",
+      "一节下课铃",
+      "一次下山"
+    ],
+    "polyphonic": []
+  },
+  {
+    "character": "好",
+    "pinyin": "hǎo / hào",
+    "tone": "ˇ / ˋ",
+    "initial": "h",
+    "final": "ǎo / ào",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "撇点",
+        "mark": "𡿨"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "横撇",
+        "mark": "乛"
+      },
+      {
+        "name": "竖钩",
+        "mark": "亅"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      }
+    ],
+    "radical": "女",
+    "structure": "左右结构",
+    "meaning": "本义常解释为美好、令人满意，也可表示喜爱。",
+    "antonyms": [
+      "坏",
+      "差"
+    ],
+    "synonyms": [
+      "佳",
+      "优"
+    ],
+    "words": [
+      "你好",
+      "好人",
+      "好看",
+      "爱好",
+      "友好"
+    ],
+    "sentences": {
+      "beginner": "小明是一个好孩子。",
+      "intermediate": "我有一个爱好，就是每天读课外书。",
+      "advanced": "好的学习习惯，会让我们进步得更稳。"
+    },
+    "measureWords": [
+      "一个好人",
+      "一种爱好",
+      "一句好话"
+    ],
+    "polyphonic": [
+      "hǎo：好人、你好",
+      "hào：爱好、好学"
+    ]
+  },
+  {
+    "character": "长",
+    "pinyin": "cháng / zhǎng",
+    "tone": "ˊ / ˇ",
+    "initial": "ch / zh",
+    "final": "áng / ǎng",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "横",
+        "mark": "一"
+      },
+      {
+        "name": "竖提",
+        "mark": "𠄌"
+      },
+      {
+        "name": "捺",
+        "mark": "㇏"
+      }
+    ],
+    "radical": "长",
+    "structure": "独体字",
+    "meaning": "本义指距离远，也可表示年纪增长或负责人。",
+    "antonyms": [
+      "短"
+    ],
+    "synonyms": [
+      "久"
+    ],
+    "words": [
+      "长大",
+      "长江",
+      "很长",
+      "校长",
+      "成长"
+    ],
+    "sentences": {
+      "beginner": "这条路很长。",
+      "intermediate": "我们在老师的帮助下慢慢成长。",
+      "advanced": "校长鼓励大家做有理想、爱学习的学生。"
+    },
+    "measureWords": [
+      "一条长路",
+      "一位校长",
+      "一段成长经历"
+    ],
+    "polyphonic": [
+      "cháng：长大、很长",
+      "zhǎng：校长、长辈"
+    ]
+  },
+  {
+    "character": "乐",
+    "pinyin": "lè / yuè",
+    "tone": "ˋ / ˋ",
+    "initial": "l / y",
+    "final": "è / uè",
+    "syllableType": "普通音节",
+    "strokes": [
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "竖折",
+        "mark": "㇄"
+      },
+      {
+        "name": "竖钩",
+        "mark": "亅"
+      },
+      {
+        "name": "撇",
+        "mark": "丿"
+      },
+      {
+        "name": "点",
+        "mark": "丶"
+      }
+    ],
+    "radical": "丿",
+    "structure": "独体字",
+    "meaning": "本义与音乐有关，也表示快乐、高兴。",
+    "antonyms": [
+      "苦",
+      "悲"
+    ],
+    "synonyms": [
+      "喜"
+    ],
+    "words": [
+      "快乐",
+      "乐园",
+      "音乐",
+      "可乐",
+      "乐意"
+    ],
+    "sentences": {
+      "beginner": "我今天很快乐。",
+      "intermediate": "音乐课上，大家一起唱歌。",
+      "advanced": "帮助别人带来的快乐，比得到礼物更长久。"
+    },
+    "measureWords": [
+      "一首音乐",
+      "一种快乐",
+      "一瓶可乐"
+    ],
+    "polyphonic": [
+      "lè：快乐、乐意",
+      "yuè：音乐、乐器"
+    ]
+  }
+]

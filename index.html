@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>小学语文助手</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js" as="script" crossorigin />
+    <link rel="stylesheet" href="./src/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="header-inner">
+        <div class="header-title">
+          <p class="eyebrow">你的语文小伙伴</p>
+          <h1>小学语文助手</h1>
+        </div>
+        <nav class="feature-nav" aria-label="功能导航">
+          <button class="nav-item active" type="button" data-feature="hanzi" aria-current="page">汉字</button>
+          <button class="nav-item" type="button" data-feature="meaning">字义</button>
+          <button class="nav-item" type="button" data-feature="words">组词</button>
+          <button class="nav-item" type="button" data-feature="sentences">造句</button>
+          <button class="nav-item" type="button" data-feature="history">记录</button>
+        </nav>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="search-panel" aria-labelledby="search-title">
+        <div class="search-copy">
+          <h2 id="search-title">输入要学习的汉字</h2>
+          <p id="search-description">输入一个或多个汉字，一字一页慢慢学～</p>
+        </div>
+        <form class="search-form" id="character-form">
+          <label class="sr-only" for="character-input">汉字输入</label>
+          <div class="input-wrap">
+            <input
+              id="character-input"
+              class="character-input"
+              type="text"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="试试输入今天学的字～"
+              aria-describedby="input-help"
+            />
+            <button class="clear-input-button" id="clear-input-button" type="button" aria-label="清空输入内容" hidden>
+              ×
+            </button>
+          </div>
+          <button class="search-button" type="submit">开始学习</button>
+        </form>
+        <p class="input-help" id="input-help">非汉字内容会自动忽略。数据不足的字段会显示"暂无"。</p>
+      </section>
+
+      <section class="results-section" aria-live="polite">
+        <div class="results-header">
+          <div>
+            <h2 id="results-title">学习卡片</h2>
+            <p id="result-summary">默认展示示例汉字。</p>
+          </div>
+          <button class="print-button" id="print-button" type="button">打印</button>
+        </div>
+        <nav class="char-pager" id="char-pager" aria-label="汉字分页" hidden>
+          <button class="pager-nav prev" type="button" aria-label="上一个字">◀</button>
+          <div class="pager-pages" id="pager-pages" role="tablist"></div>
+          <button class="pager-nav next" type="button" aria-label="下一个字">▶</button>
+          <span class="pager-counter" id="pager-counter" aria-live="polite"></span>
+        </nav>
+        <div class="card-grid" id="cards"></div>
+      </section>
+    </main>
+
+    <template id="character-card-template">
+      <article class="character-card">
+        <div class="char-showcase">
+          <div class="pinyin-display">
+            <span class="pinyin-text" data-field="pinyin-big">—</span>
+            <button type="button" class="speak-btn" data-action="speak" aria-label="朗读这个字">
+              <span class="speak-icon" aria-hidden="true">🔊</span>
+            </button>
+          </div>
+          <div class="tian-grid">
+            <span class="grid-line horizontal" aria-hidden="true"></span>
+            <span class="grid-line vertical" aria-hidden="true"></span>
+            <span class="grid-line diagonal-a" aria-hidden="true"></span>
+            <span class="grid-line diagonal-b" aria-hidden="true"></span>
+            <span class="big-character" aria-hidden="true"></span>
+            <div class="writer-mount" aria-hidden="true"></div>
+            <span class="reward-burst" aria-hidden="true">👍 真棒！</span>
+          </div>
+          <p class="character-label"></p>
+          <div class="stroke-controls" role="group" aria-label="笔顺操作">
+            <button type="button" class="stroke-btn" data-action="animate">✏️ 笔顺动画</button>
+            <button type="button" class="stroke-btn" data-action="quiz">📝 描红练习</button>
+            <button type="button" class="stroke-btn ghost" data-action="reset" hidden>👀 显示字</button>
+          </div>
+        </div>
+
+        <div class="card-tabs" role="tablist">
+          <button class="card-tab is-active" type="button" role="tab" data-tab="form" aria-selected="true">
+            <span class="tab-icon" aria-hidden="true">🔤</span><span>字形拼音</span>
+          </button>
+          <button class="card-tab" type="button" role="tab" data-tab="meaning" aria-selected="false">
+            <span class="tab-icon" aria-hidden="true">📖</span><span>字义</span>
+          </button>
+          <button class="card-tab" type="button" role="tab" data-tab="stroke" aria-selected="false">
+            <span class="tab-icon" aria-hidden="true">✏️</span><span>笔顺</span>
+          </button>
+          <button class="card-tab" type="button" role="tab" data-tab="words" aria-selected="false">
+            <span class="tab-icon" aria-hidden="true">📝</span><span>组词造句</span>
+          </button>
+        </div>
+
+        <div class="card-panels">
+          <section class="card-panel is-active panel-form" role="tabpanel" data-panel="form">
+            <div class="info-grid">
+              <div class="info-cell"><span class="info-label">拼音</span><span class="info-value" data-field="pinyin">—</span></div>
+              <div class="info-cell tone-cell"><span class="info-label">声调</span><span class="info-value" data-field="tone">—</span></div>
+              <div class="info-cell"><span class="info-label">声母</span><span class="info-value" data-field="initial">—</span></div>
+              <div class="info-cell"><span class="info-label">韵母</span><span class="info-value" data-field="final">—</span></div>
+              <div class="info-cell"><span class="info-label">音节类型</span><span class="info-value" data-field="syllableType">—</span></div>
+              <div class="info-cell"><span class="info-label">多音字</span><span class="info-value" data-field="polyphonic">—</span></div>
+              <div class="info-cell"><span class="info-label">部首</span><span class="info-value" data-field="radical">—</span></div>
+              <div class="info-cell"><span class="info-label">字形结构</span><span class="info-value" data-field="structure">—</span></div>
+            </div>
+          </section>
+
+          <section class="card-panel panel-meaning" role="tabpanel" data-panel="meaning" hidden>
+            <div class="meaning-block">
+              <h4>本义</h4>
+              <p class="meaning-text" data-field="meaning">—</p>
+            </div>
+            <div class="info-grid two-col">
+              <div class="info-cell"><span class="info-label">近义词</span><span class="info-value" data-field="synonyms">—</span></div>
+              <div class="info-cell"><span class="info-label">反义词</span><span class="info-value" data-field="antonyms">—</span></div>
+            </div>
+          </section>
+
+          <section class="card-panel panel-stroke" role="tabpanel" data-panel="stroke" hidden>
+            <p class="stroke-summary"></p>
+            <p class="stroke-tip">提示：点击上方"笔顺动画"看一遍写法，再点"描红练习"自己试一试。</p>
+          </section>
+
+          <section class="card-panel panel-words" role="tabpanel" data-panel="words" hidden>
+            <div class="words-block">
+              <h4>常见组词</h4>
+              <ul class="word-list"></ul>
+            </div>
+            <div class="words-block">
+              <h4>造句练习</h4>
+              <div class="sentence-list"></div>
+            </div>
+            <div class="words-block">
+              <h4>量词搭配</h4>
+              <ul class="measure-list"></ul>
+            </div>
+          </section>
+        </div>
+      </article>
+    </template>
+
+    <template id="simple-card-template">
+      <article class="simple-card">
+        <header class="simple-card-header">
+          <h3></h3>
+          <p></p>
+        </header>
+        <div class="simple-card-body"></div>
+      </article>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js" defer crossorigin></script>
+    <script src="./src/app.js" defer></script>
+  </body>
+</html>
