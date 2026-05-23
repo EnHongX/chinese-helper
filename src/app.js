@@ -405,9 +405,9 @@
       return strokeText(record.strokes);
     }
     if (record.strokeCount) {
-      return `暂无笔画顺序，已知共${record.strokeCount}画`;
+      return `文本笔画名称暂未收录，可点击上方“笔顺动画”查看写法；已知共${record.strokeCount}画`;
     }
-    return "暂无笔画数据";
+    return "文本笔画名称暂未收录，可点击上方“笔顺动画”查看写法";
   }
 
   function buildSentenceRow(label, text) {
