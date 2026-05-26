@@ -25,6 +25,17 @@
   let currentCharacters = [];
   let currentCharIndex = 0;
 
+  // Dictation state
+  let dictationPool = [];
+  let dictationSelected = [];
+  let dictationSession = null; // { characters, total_count, current_index, results }
+  let dictationCurrentAnswer = ""; // correct char for current question
+  let dictationWrongAttempts = 0;
+  let dictationSubmitting = false;
+  let dictationManualChars = [];
+  let dictationCurrentState = null; // {position, wrongAttempts, lastAnswer, isCorrect}
+  let dictationHistoryItems = [];
+
   const speechSupported = typeof window !== "undefined" && "speechSynthesis" in window;
   let chineseVoice = null;
   let lastSpeakError = null;
@@ -144,6 +155,13 @@
       placeholder: "",
       help: "点击记录内容会自动切换到对应功能并回填查询。",
       resultsTitle: "学习记录"
+    },
+    dictation: {
+      title: "听写练习",
+      description: "从查过的字里选，或自己输入要听写的汉字。",
+      placeholder: "",
+      help: "一次最少 2 个字、最多 20 个字，重复字只算一个。",
+      resultsTitle: "听写练习"
     }
   };
 
@@ -152,7 +170,8 @@
     meaning: "字义",
     words: "组词",
     sentences: "造句",
-    history: "记录"
+    history: "记录",
+    dictation: "听写"
   };
 
   const phraseData = new Map([
@@ -861,6 +880,11 @@
   }
 
   async function renderCurrentFeature(sourceText, shouldSave) {
+    if (currentFeature === "dictation") {
+      renderDictationPage();
+      return;
+    }
+
     if (currentFeature === "history") {
       renderHistoryPage();
       return;
@@ -898,7 +922,7 @@
     updateClearInputButton();
     document.querySelector("#input-help").textContent = copy.help;
     resultsTitle.textContent = copy.resultsTitle;
-    searchPanel.hidden = feature === "history";
+    searchPanel.hidden = feature === "history" || feature === "dictation";
 
     navItems.forEach((item) => {
       const isActive = item.dataset.feature === feature;
@@ -910,7 +934,9 @@
       }
     });
 
-    if (feature === "history") {
+    if (feature === "dictation") {
+      renderDictationPage();
+    } else if (feature === "history") {
       renderHistoryPage();
     } else if (feature === "hanzi") {
       const source = input.value || defaultCharacters.join("");
@@ -969,6 +995,17 @@
     }
   }
 
+  async function loadDictationHistory() {
+    try {
+      const response = await fetch("/api/dictation/history");
+      if (!response.ok) throw new Error("unavailable");
+      const payload = await response.json();
+      dictationHistoryItems = payload.items || [];
+    } catch {
+      dictationHistoryItems = [];
+    }
+  }
+
   function renderHistoryPage(message) {
     hidePager();
     currentCharacters = [];
@@ -998,7 +1035,8 @@
       ["hanzi", "汉字"],
       ["meaning", "字义"],
       ["words", "组词"],
-      ["sentences", "造句"]
+      ["sentences", "造句"],
+      ["dictation", "听写"]
     ].forEach(([value, label]) => {
       const option = document.createElement("option");
       option.value = value;
@@ -1036,17 +1074,32 @@
     const list = document.createElement("div");
     list.className = "history-list";
 
-    const renderRows = () => {
+    const renderRows = async () => {
       list.innerHTML = "";
       const keyword = searchInput.value.trim();
       const feature = featureFilter.value;
-      const filteredItems = historyItems.filter((item) => {
-        const featureMatched = feature === "all" || (item.feature || "hanzi") === feature;
-        const text = `${item.query || ""}${item.characters || ""}${featureLabels[item.feature] || ""}`;
-        return featureMatched && (!keyword || text.includes(keyword));
-      });
 
-      if (!filteredItems.length) {
+      // Load dictation history when needed (only fetch once per page load)
+      if ((feature === "dictation" || feature === "all") && !dictationHistoryItems.length) {
+        await loadDictationHistory();
+      }
+
+      const filteredItems = feature === "dictation"
+        ? []
+        : historyItems.filter((item) => {
+            const featureMatched = feature === "all" || (item.feature || "hanzi") === feature;
+            const text = `${item.query || ""}${item.characters || ""}${featureLabels[item.feature] || ""}`;
+            return featureMatched && (!keyword || text.includes(keyword));
+          });
+
+      const filteredDictation = (feature === "dictation" || feature === "all")
+        ? dictationHistoryItems.filter(item => {
+            const text = `${item.characters || ""}${item.wrong_characters || ""}`;
+            return !keyword || text.includes(keyword);
+          })
+        : [];
+
+      if (!filteredItems.length && !filteredDictation.length) {
         const empty = document.createElement("p");
         empty.className = "history-empty";
         empty.textContent = "没有匹配的学习记录。";
@@ -1057,6 +1110,82 @@
         selectAll.indeterminate = false;
         return;
       }
+
+      // Render dictation history rows
+      filteredDictation.forEach((item) => {
+        const row = document.createElement("article");
+        row.className = "history-row dictation-history-row";
+
+        const spacer = document.createElement("span");
+        spacer.style.width = "22px";
+
+        const content = document.createElement("div");
+        content.style.cssText = "flex: 1; display: grid; gap: 4px;";
+
+        const titleRow = document.createElement("div");
+        titleRow.style.cssText = "display: flex; align-items: center; gap: 10px; flex-wrap: wrap;";
+        const chars = document.createElement("span");
+        chars.className = "history-query";
+        chars.textContent = item.characters || "";
+        titleRow.append(chars);
+
+        const badge = document.createElement("span");
+        badge.style.cssText = "padding: 2px 8px; border-radius: 8px; font-size: 12px; font-weight: 700;";
+        if (item.accuracy >= 80) {
+          badge.style.background = "var(--green-soft)";
+          badge.style.color = "var(--green)";
+        } else if (item.accuracy >= 60) {
+          badge.style.background = "var(--yellow-soft)";
+          badge.style.color = "#b8860b";
+        } else {
+          badge.style.background = "#fff0ed";
+          badge.style.color = "var(--brand)";
+        }
+        badge.textContent = `${item.accuracy}%`;
+        titleRow.append(badge);
+        content.append(titleRow);
+
+        const meta = document.createElement("div");
+        meta.className = "history-meta";
+        const wrongChars = item.wrong_characters || "";
+        const scoreText = `${item.correct_count}/${item.total_count} 正确`;
+        meta.textContent = wrongChars
+          ? `听写 · ${item.created_at || ""} · ${scoreText} · 错字：${wrongChars}`
+          : `听写 · ${item.created_at || ""} · ${scoreText}`;
+        content.append(meta);
+
+        if (wrongChars && Array.from(wrongChars).length >= 2) {
+          const retryBtn = document.createElement("button");
+          retryBtn.type = "button";
+          retryBtn.className = "dictation-retry-small";
+          retryBtn.textContent = `重听错字（${Array.from(wrongChars).length}）`;
+          retryBtn.addEventListener("click", async (e) => {
+            e.stopPropagation();
+            try {
+              const resp = await fetch("/api/dictation/start", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ characters: Array.from(wrongChars) })
+              });
+              if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                alert(err.error || "启动失败");
+                return;
+              }
+              const data = await resp.json();
+              dictationSession = { characters: data.characters, total_count: data.total_count, current_index: 0, results: [] };
+              setFeature("dictation");
+              renderDictationQuestion(0);
+            } catch {
+              alert("无法连接到服务");
+            }
+          });
+          content.append(retryBtn);
+        }
+
+        row.append(spacer, content);
+        list.append(row);
+      });
 
       filteredItems.forEach((item) => {
       const row = document.createElement("article");
@@ -1086,7 +1215,9 @@
       row.append(checkbox, content);
       list.append(row);
     });
-      summary.textContent = `共 ${historyItems.length} 条学习记录，当前显示 ${filteredItems.length} 条。`;
+      const totalShowing = filteredItems.length + filteredDictation.length;
+      const totalCount = historyItems.length + (feature === "all" || feature === "dictation" ? dictationHistoryItems.length : 0);
+      summary.textContent = `共 ${totalCount} 条学习记录，当前显示 ${totalShowing} 条。`;
       attachRowHandlers();
     };
 
@@ -1157,6 +1288,974 @@
     } catch (error) {
       summary.textContent = "删除失败，请确认本地服务正在运行。";
     }
+  }
+
+
+  // ============ Dictation Functions ============
+
+  function renderDictationPage() {
+    hidePager();
+    currentCharacters = [];
+    currentCharIndex = 0;
+    cards.innerHTML = "";
+    summary.textContent = "选择要听写的汉字开始练习。";
+
+    // First check if there's an active session to resume
+    fetch("/api/dictation/session")
+      .then(r => r.ok ? r.json() : { active: false })
+      .then(data => {
+        if (data.active && data.session) {
+          renderDictationResume(data);
+        } else if (data.auto_completed && data.session) {
+          dictationSession = data.session;
+          renderDictationSummary(data.session);
+        } else {
+          renderDictationSetup();
+        }
+      })
+      .catch(() => {
+        renderDictationSetup("无法连接到服务，请确认本地服务正在运行。");
+      });
+  }
+
+  function renderDictationResume(data) {
+    // data has .session with optional .state and .auto_completed
+    const session = data.session;
+
+    // Auto-completed by server (all answered, refresh before clicking "view results")
+    if (data.auto_completed) {
+      dictationSession = session;
+      renderDictationSummary(session);
+      return;
+    }
+
+    const state = session.state;
+
+    // If there is saved state with a wrong answer, restore that view directly
+    if (state && !state.is_correct) {
+      dictationSession = session;
+      dictationCurrentState = state;
+      dictationWrongAttempts = state.wrong_attempts || 0;
+      dictationCurrentAnswer = session.characters[state.char_index];
+      renderDictationResumeWrong(session, state);
+      return;
+    }
+
+    // Otherwise show the resume banner
+    const panel = document.createElement("div");
+    panel.className = "dictation-panel";
+
+    const banner = document.createElement("div");
+    banner.className = "dictation-resume-banner";
+
+    const title = document.createElement("h3");
+    title.textContent = "有未完成的听写";
+    banner.append(title);
+
+    const desc = document.createElement("p");
+    const done = session.results ? session.results.length : 0;
+    desc.textContent = `已完成 ${done} / ${session.total_count} 题，要继续做完吗？`;
+    banner.append(desc);
+
+    const actions = document.createElement("div");
+    actions.className = "dictation-resume-actions";
+
+    const resumeBtn = document.createElement("button");
+    resumeBtn.type = "button";
+    resumeBtn.className = "dictation-start-btn";
+    resumeBtn.textContent = "继续听写";
+    resumeBtn.addEventListener("click", () => {
+      dictationSession = session;
+      const nextIdx = session.current_index || 0;
+      if (nextIdx >= session.total_count) {
+        completeDictation(session);
+      } else {
+        renderDictationQuestion(nextIdx);
+      }
+    });
+
+    const newBtn = document.createElement("button");
+    newBtn.type = "button";
+    newBtn.className = "dictation-new-btn";
+    newBtn.textContent = "重新开始";
+    newBtn.addEventListener("click", async () => {
+      try {
+        await fetch("/api/dictation/session", { method: "DELETE" });
+      } catch {}
+      dictationSession = null;
+      renderDictationSetup();
+    });
+
+    actions.append(resumeBtn, newBtn);
+    banner.append(actions);
+    panel.append(banner);
+    cards.append(panel);
+  }
+
+  function renderDictationResumeWrong(session, state) {
+    cards.innerHTML = "";
+    const index = state.char_index;
+    const correctChar = session.characters[index];
+    dictationCurrentAnswer = correctChar;
+    dictationWrongAttempts = state.wrong_attempts || 0;
+
+    const panel = document.createElement("div");
+    panel.className = "dictation-panel";
+
+    const card = document.createElement("div");
+    card.className = "dictation-card";
+
+    // Progress
+    const progress = document.createElement("div");
+    progress.className = "dictation-progress";
+    progress.textContent = `第 ${index + 1} 题 / 共 ${session.total_count} 题`;
+    card.append(progress);
+
+    // Question area
+    const question = document.createElement("div");
+    question.className = "dictation-question";
+
+    const speakBtn = document.createElement("button");
+    speakBtn.type = "button";
+    speakBtn.className = "dictation-speak-btn";
+    speakBtn.innerHTML = '<span class="speak-icon" aria-hidden="true">🔊</span><span>点我听读音</span>';
+    speakBtn.setAttribute("aria-label", "点击朗读这个字");
+    speakBtn.addEventListener("click", () => {
+      if (speakBtn.disabled) return;
+      speakBtn.disabled = true;
+      speakText(correctChar, {
+        rate: 0.7,
+        onend: () => { speakBtn.disabled = false; },
+        onerror: () => { speakBtn.disabled = false; }
+      });
+    });
+    question.append(speakBtn);
+
+    const hint = document.createElement("p");
+    hint.style.cssText = "margin-top: 10px; color: var(--muted); font-size: 15px;";
+    hint.textContent = "先听读音，再写下你听到的字吧～";
+    question.append(hint);
+    card.append(question);
+
+    // Answer form
+    const answerForm = document.createElement("div");
+    answerForm.className = "dictation-answer-form";
+
+    const answerInput = document.createElement("input");
+    answerInput.className = "dictation-answer-input";
+    answerInput.type = "text";
+    answerInput.inputMode = "text";
+    answerInput.placeholder = "改正后再输入";
+    answerInput.setAttribute("aria-label", "输入你听到的字");
+    answerInput.maxLength = 1;
+    answerInput.autocomplete = "off";
+
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "button";
+    submitBtn.className = "dictation-submit-btn";
+    submitBtn.textContent = "提交";
+
+    answerInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submitBtn.click();
+    });
+
+    submitBtn.addEventListener("click", async () => {
+      if (dictationSubmitting) return;
+      const answer = answerInput.value.trim();
+      if (!answer) {
+        const feedbackArea = panel.querySelector(".dictation-feedback-area");
+        if (feedbackArea) {
+          feedbackArea.innerHTML = '<p style="color: var(--brand); font-weight: 600; text-align: center; margin-top: 8px;">请先输入答案再提交哦～</p>';
+        }
+        answerInput.focus();
+        return;
+      }
+
+      dictationSubmitting = true;
+      submitBtn.disabled = true;
+      answerInput.disabled = true;
+
+      let serverResult;
+      try {
+        const resp = await fetch("/api/dictation/answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            position: index,
+            character: answer
+          })
+        });
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          const feedbackArea = panel.querySelector(".dictation-feedback-area");
+          if (feedbackArea) {
+            feedbackArea.innerHTML = `<p style="color: var(--brand); font-weight: 600; text-align: center; margin-top: 8px;">${err.error || "提交失败，请稍后重试。"}</p>`;
+          }
+          submitBtn.disabled = false;
+          answerInput.disabled = false;
+          dictationSubmitting = false;
+          return;
+        }
+        serverResult = await resp.json();
+      } catch {
+        const feedbackArea = panel.querySelector(".dictation-feedback-area");
+        if (feedbackArea) {
+          feedbackArea.innerHTML = '<p style="color: var(--brand); font-weight: 600; text-align: center; margin-top: 8px;">无法连接到服务，请确认本地服务正在运行。</p>';
+        }
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        dictationSubmitting = false;
+        return;
+      }
+
+      const isCorrect = serverResult.correct;
+      const attempts = serverResult.wrong_attempts;
+
+      dictationCurrentState = { position: index, wrongAttempts: attempts, lastAnswer: answer, isCorrect };
+
+      const existingIdx = session.results.findIndex(r => r.char_index === index);
+      const resultEntry = { char_index: index, character: isCorrect ? answer : correctChar, correct: isCorrect ? 1 : 0, wrong_attempts: attempts };
+      if (existingIdx >= 0) session.results[existingIdx] = resultEntry;
+      else session.results.push(resultEntry);
+
+      if (isCorrect) {
+        dictationWrongAttempts = attempts;
+        renderDictationFeedback(panel, index, true, answer, correctChar, session);
+      } else {
+        dictationWrongAttempts = attempts;
+        renderDictationWrongFeedback(panel, index, answer, correctChar, answerInput, submitBtn, session);
+      }
+    });
+
+    answerForm.append(answerInput, submitBtn);
+    card.append(answerForm);
+
+    // Show wrong feedback immediately (restored state)
+    const feedbackArea = document.createElement("div");
+    feedbackArea.className = "dictation-feedback-area";
+    const feedback = document.createElement("div");
+    feedback.className = "dictation-feedback is-wrong";
+
+    const feedbackTitle = document.createElement("p");
+    feedbackTitle.className = "dictation-feedback-title";
+    feedbackTitle.textContent = "❌ 写错了";
+    feedback.append(feedbackTitle);
+
+    const correctLabel = document.createElement("p");
+    correctLabel.style.cssText = "margin: 6px 0 0; color: var(--ink-soft); font-size: 16px;";
+    correctLabel.textContent = "正确答案是：";
+    feedback.append(correctLabel);
+
+    const correctCharEl = document.createElement("span");
+    correctCharEl.className = "dictation-feedback-char";
+    correctCharEl.textContent = correctChar;
+    feedback.append(correctCharEl);
+
+    const retryHint = document.createElement("p");
+    retryHint.style.cssText = "margin: 8px 0 0; color: var(--muted); font-size: 15px;";
+    retryHint.textContent = "改正后再提交吧～";
+    feedback.append(retryHint);
+
+    feedbackArea.append(feedback);
+    card.append(feedbackArea);
+
+    panel.append(card);
+    cards.append(panel);
+
+    setTimeout(() => answerInput.focus(), 100);
+  }
+
+  function renderDictationSetup(message) {
+    cards.innerHTML = "";
+    dictationSession = null;
+    dictationSelected = [];
+
+    const panel = document.createElement("div");
+    panel.className = "dictation-panel";
+
+    const card = document.createElement("div");
+    card.className = "dictation-card";
+
+    const title = document.createElement("h3");
+    title.textContent = "选择要听写的汉字";
+    card.append(title);
+
+    const desc = document.createElement("p");
+    desc.textContent = "从下方查过的字中挑选，或在输入框中手动输入要听写的字（2~20 个，重复自动去重）。";
+    card.append(desc);
+
+    // Text input area
+    const textarea = document.createElement("textarea");
+    textarea.className = "dictation-textarea";
+    textarea.placeholder = "也可以在这里手动输入汉字…";
+    textarea.setAttribute("aria-label", "手动输入要听写的汉字");
+    textarea.addEventListener("input", () => {
+      const raw = textarea.value;
+      const nonChinese = raw.replace(/[\p{Script=Han}]/gu, "").replace(/[\s、，,]/gu, "").trim();
+      if (nonChinese) {
+        updateDictationError(panel, "输入中包含非汉字内容，已自动忽略：" + nonChinese);
+      } else {
+        updateDictationError(panel, null);
+      }
+
+      const manual = Array.from(raw).filter(c => isChineseCharacter(c));
+      const seen = new Set();
+      const unique = [];
+      for (const c of manual) {
+        if (!seen.has(c)) { seen.add(c); unique.push(c); }
+      }
+
+      // Remove old manual chars from selection, add new ones
+      const poolSelected = dictationSelected.filter(c => !dictationManualChars.includes(c));
+      const newManual = unique.filter(c => !poolSelected.includes(c));
+      dictationSelected = [...poolSelected, ...newManual];
+      dictationManualChars = unique;
+
+      // Update pool button states
+      panel.querySelectorAll(".dictation-char-btn").forEach(btn => {
+        btn.classList.toggle("selected", dictationSelected.includes(btn.dataset.char));
+      });
+
+      updateDictationSelectedDisplay(panel);
+    });
+    card.append(textarea);
+
+    // Error message
+    const errorEl = document.createElement("p");
+    errorEl.className = "dictation-error";
+    errorEl.hidden = true;
+    card.append(errorEl);
+
+    // Character pool from history
+    const poolSection = document.createElement("div");
+    poolSection.className = "dictation-pool";
+
+    const poolHeader = document.createElement("div");
+    poolHeader.className = "dictation-pool-header";
+    const poolTitle = document.createElement("h4");
+    poolTitle.textContent = "从查过的字中选：";
+    poolHeader.append(poolTitle);
+
+    const poolSearch = document.createElement("input");
+    poolSearch.className = "dictation-pool-search";
+    poolSearch.type = "search";
+    poolSearch.placeholder = "搜索字…";
+    poolSearch.setAttribute("aria-label", "搜索可选的字");
+    poolHeader.append(poolSearch);
+    poolSection.append(poolHeader);
+
+    const poolChars = document.createElement("div");
+    poolChars.className = "dictation-pool-chars";
+    poolSection.append(poolChars);
+    card.append(poolSection);
+
+    // Selected chars display
+    const selectedSection = document.createElement("div");
+    selectedSection.className = "dictation-selected";
+    const selectedTitle = document.createElement("h4");
+    selectedTitle.textContent = "已选汉字：";
+    selectedSection.append(selectedTitle);
+    const selectedChars = document.createElement("div");
+    selectedChars.className = "dictation-selected-chars";
+    selectedSection.append(selectedChars);
+    card.append(selectedSection);
+
+    // Actions
+    const actions = document.createElement("div");
+    actions.className = "dictation-actions";
+    const startBtn = document.createElement("button");
+    startBtn.type = "button";
+    startBtn.className = "dictation-start-btn";
+    startBtn.textContent = "开始听写";
+    startBtn.disabled = true;
+    startBtn.addEventListener("click", async () => {
+      if (dictationSelected.length < 2) {
+        updateDictationError(panel, "至少需要选 2 个不重复的汉字哦～");
+        return;
+      }
+      if (dictationSelected.length > 20) {
+        updateDictationError(panel, "一次最多只能听写 20 个字哦～");
+        return;
+      }
+      try {
+        const resp = await fetch("/api/dictation/start", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ characters: dictationSelected })
+        });
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          updateDictationError(panel, err.error || "启动失败，请稍后重试。");
+          return;
+        }
+        const data = await resp.json();
+        dictationSession = { characters: data.characters, total_count: data.total_count, current_index: 0, results: [] };
+        renderDictationQuestion(0);
+      } catch (e) {
+        updateDictationError(panel, "无法连接到服务，请确认本地服务正在运行。");
+      }
+    });
+    actions.append(startBtn);
+    card.append(actions);
+
+    panel.append(card);
+    cards.append(panel);
+
+    if (message) {
+      updateDictationError(panel, message);
+    }
+
+    // Load character pool
+    loadDictationPool(panel, poolChars, poolSearch);
+
+    // Store references for updates
+    panel._startBtn = startBtn;
+    panel._selectedDisplay = selectedChars;
+    panel._errorEl = errorEl;
+
+    updateDictationSelectedDisplay(panel);
+  }
+
+  function updateDictationError(panel, msg) {
+    const errorEl = panel.querySelector(".dictation-error") || panel._errorEl;
+    if (!errorEl) return;
+    if (msg) {
+      errorEl.textContent = msg;
+      errorEl.hidden = false;
+    } else {
+      errorEl.hidden = true;
+      errorEl.textContent = "";
+    }
+  }
+
+  function updateDictationSelectedDisplay(panel) {
+    const display = panel.querySelector(".dictation-selected-chars") || panel._selectedDisplay;
+    const startBtn = panel.querySelector(".dictation-start-btn") || panel._startBtn;
+    if (!display) return;
+    display.innerHTML = "";
+    if (!dictationSelected.length) {
+      const empty = document.createElement("span");
+      empty.className = "dictation-selected-empty";
+      empty.textContent = "还没选字哦～";
+      display.append(empty);
+    } else {
+      dictationSelected.forEach(char => {
+        const chip = document.createElement("span");
+        chip.className = "dictation-selected-char";
+        chip.textContent = char;
+        chip.title = "点击移除";
+        chip.style.cursor = "pointer";
+        chip.addEventListener("click", () => {
+          dictationSelected = dictationSelected.filter(c => c !== char);
+          // Also uncheck in pool
+          const poolBtn = panel.querySelector(`.dictation-char-btn[data-char="${char}"]`);
+          if (poolBtn) poolBtn.classList.remove("selected");
+          updateDictationSelectedDisplay(panel);
+        });
+        display.append(chip);
+      });
+    }
+    if (startBtn) {
+      startBtn.disabled = dictationSelected.length < 2;
+    }
+  }
+
+  async function loadDictationPool(panel, poolContainer, poolSearch) {
+    try {
+      const resp = await fetch("/api/dictation/characters");
+      if (!resp.ok) throw new Error("unavailable");
+      const data = await resp.json();
+      dictationPool = data.characters || [];
+    } catch {
+      dictationPool = [];
+      poolContainer.innerHTML = "";
+      const msg = document.createElement("span");
+      msg.style.color = "var(--muted)";
+      msg.style.fontSize = "15px";
+      msg.textContent = "暂无查过的字。请先去其他功能查一些字，或直接手动输入。";
+      poolContainer.append(msg);
+      return;
+    }
+
+    function renderPool(filter) {
+      poolContainer.innerHTML = "";
+      const filtered = filter
+        ? dictationPool.filter(c => c.includes(filter))
+        : dictationPool;
+
+      if (!filtered.length) {
+        const msg = document.createElement("span");
+        msg.style.color = "var(--muted)";
+        msg.style.fontSize = "15px";
+        msg.textContent = filter ? "没有匹配的字。" : "暂无可选的字。";
+        poolContainer.append(msg);
+        return;
+      }
+
+      filtered.forEach(char => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "dictation-char-btn";
+        btn.textContent = char;
+        btn.dataset.char = char;
+        btn.setAttribute("aria-label", `选择汉字：${char}`);
+        if (dictationSelected.includes(char)) {
+          btn.classList.add("selected");
+        }
+        btn.addEventListener("click", () => {
+          if (dictationSelected.includes(char)) {
+            dictationSelected = dictationSelected.filter(c => c !== char);
+            btn.classList.remove("selected");
+          } else {
+            if (dictationSelected.length >= 20) {
+              updateDictationError(panel, "最多只能选 20 个字哦～");
+              return;
+            }
+            dictationSelected.push(char);
+            btn.classList.add("selected");
+          }
+          updateDictationSelectedDisplay(panel);
+        });
+        poolContainer.append(btn);
+      });
+    }
+
+    renderPool("");
+    poolSearch.addEventListener("input", () => renderPool(poolSearch.value.trim()));
+  }
+
+  function renderDictationQuestion(index) {
+    cards.innerHTML = "";
+    const session = dictationSession;
+    const char = session.characters[index];
+    dictationCurrentAnswer = char;
+    dictationWrongAttempts = 0;
+    dictationSubmitting = false;
+
+    const panel = document.createElement("div");
+    panel.className = "dictation-panel";
+
+    const card = document.createElement("div");
+    card.className = "dictation-card";
+
+    // Progress
+    const progress = document.createElement("div");
+    progress.className = "dictation-progress";
+    progress.textContent = `第 ${index + 1} 题 / 共 ${session.total_count} 题`;
+    card.append(progress);
+
+    // Question area
+    const question = document.createElement("div");
+    question.className = "dictation-question";
+
+    const speakBtn = document.createElement("button");
+    speakBtn.type = "button";
+    speakBtn.className = "dictation-speak-btn";
+    speakBtn.innerHTML = '<span class="speak-icon" aria-hidden="true">🔊</span><span>点我听读音</span>';
+    speakBtn.setAttribute("aria-label", "点击朗读这个字");
+    speakBtn.addEventListener("click", () => {
+      if (speakBtn.disabled) return;
+      speakBtn.disabled = true;
+      speakText(char, {
+        rate: 0.7,
+        onend: () => { speakBtn.disabled = false; },
+        onerror: () => { speakBtn.disabled = false; }
+      });
+    });
+    question.append(speakBtn);
+
+    const hint = document.createElement("p");
+    hint.style.cssText = "margin-top: 10px; color: var(--muted); font-size: 15px;";
+    hint.textContent = "先听读音，再写下你听到的字吧～";
+    question.append(hint);
+    card.append(question);
+
+    // Answer form
+    const answerForm = document.createElement("div");
+    answerForm.className = "dictation-answer-form";
+
+    const answerInput = document.createElement("input");
+    answerInput.className = "dictation-answer-input";
+    answerInput.type = "text";
+    answerInput.inputMode = "text";
+    answerInput.placeholder = "写你听到的字";
+    answerInput.setAttribute("aria-label", "输入你听到的字");
+    answerInput.maxLength = 1;
+    answerInput.autocomplete = "off";
+
+    const submitBtn = document.createElement("button");
+    submitBtn.type = "button";
+    submitBtn.className = "dictation-submit-btn";
+    submitBtn.textContent = "提交";
+
+    answerInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        submitBtn.click();
+      }
+    });
+
+    submitBtn.addEventListener("click", async () => {
+      if (dictationSubmitting) return;
+      const answer = answerInput.value.trim();
+      if (!answer) {
+        const feedbackArea = panel.querySelector(".dictation-feedback-area");
+        if (feedbackArea) {
+          feedbackArea.innerHTML = '<p style="color: var(--brand); font-weight: 600; text-align: center; margin-top: 8px;">请先输入答案再提交哦～</p>';
+        }
+        answerInput.focus();
+        return;
+      }
+
+      dictationSubmitting = true;
+      submitBtn.disabled = true;
+      answerInput.disabled = true;
+
+      // Save to server and let it verify correctness
+      let serverResult;
+      try {
+        const resp = await fetch("/api/dictation/answer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            position: index,
+            character: answer
+          })
+        });
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({}));
+          const feedbackArea = panel.querySelector(".dictation-feedback-area");
+          if (feedbackArea) {
+            feedbackArea.innerHTML = `<p style="color: var(--brand); font-weight: 600; text-align: center; margin-top: 8px;">${err.error || "提交失败，请稍后重试。"}</p>`;
+          }
+          submitBtn.disabled = false;
+          answerInput.disabled = false;
+          dictationSubmitting = false;
+          return;
+        }
+        serverResult = await resp.json();
+      } catch {
+        const feedbackArea = panel.querySelector(".dictation-feedback-area");
+        if (feedbackArea) {
+          feedbackArea.innerHTML = '<p style="color: var(--brand); font-weight: 600; text-align: center; margin-top: 8px;">无法连接到服务，请确认本地服务正在运行。</p>';
+        }
+        submitBtn.disabled = false;
+        answerInput.disabled = false;
+        dictationSubmitting = false;
+        return;
+      }
+
+      const isCorrect = serverResult.correct;
+      const attempts = serverResult.wrong_attempts;
+
+      dictationCurrentState = {
+        position: index,
+        wrongAttempts: attempts,
+        lastAnswer: answer,
+        isCorrect: isCorrect
+      };
+
+      // Update local session results
+      const existingIdx = session.results.findIndex(r => r.char_index === index);
+      const resultEntry = { char_index: index, character: isCorrect ? answer : dictationCurrentAnswer, correct: isCorrect ? 1 : 0, wrong_attempts: attempts };
+      if (existingIdx >= 0) {
+        session.results[existingIdx] = resultEntry;
+      } else {
+        session.results.push(resultEntry);
+      }
+
+      if (isCorrect) {
+        dictationWrongAttempts = attempts;
+        renderDictationFeedback(panel, index, true, answer, dictationCurrentAnswer, session);
+      } else {
+        dictationWrongAttempts = attempts;
+        renderDictationWrongFeedback(panel, index, answer, dictationCurrentAnswer, answerInput, submitBtn, session);
+      }
+    });
+
+    answerForm.append(answerInput, submitBtn);
+    card.append(answerForm);
+
+    // Feedback area (placeholder)
+    const feedback = document.createElement("div");
+    feedback.className = "dictation-feedback-area";
+    card.append(feedback);
+
+    panel.append(card);
+    cards.append(panel);
+
+    // Auto-focus and auto-speak
+    setTimeout(() => {
+      answerInput.focus();
+      speakBtn.click();
+    }, 100);
+  }
+
+  function renderDictationWrongFeedback(panel, index, wrongAnswer, correctChar, answerInput, submitBtn, session) {
+    const feedbackArea = panel.querySelector(".dictation-feedback-area");
+    if (!feedbackArea) return;
+
+    feedbackArea.innerHTML = "";
+    const feedback = document.createElement("div");
+    feedback.className = "dictation-feedback is-wrong";
+
+    const title = document.createElement("p");
+    title.className = "dictation-feedback-title";
+    title.textContent = "❌ 写错了";
+    feedback.append(title);
+
+    const correctLabel = document.createElement("p");
+    correctLabel.style.cssText = "margin: 6px 0 0; color: var(--ink-soft); font-size: 16px;";
+    correctLabel.textContent = `正确答案是：`;
+    feedback.append(correctLabel);
+
+    const correctCharEl = document.createElement("span");
+    correctCharEl.className = "dictation-feedback-char";
+    correctCharEl.textContent = correctChar;
+    feedback.append(correctCharEl);
+
+    const retryHint = document.createElement("p");
+    retryHint.style.cssText = "margin: 8px 0 0; color: var(--muted); font-size: 15px;";
+    retryHint.textContent = "改正后再提交吧～";
+    feedback.append(retryHint);
+
+    feedbackArea.append(feedback);
+
+    // Reset for retry
+    answerInput.value = "";
+    answerInput.disabled = false;
+    submitBtn.disabled = true;
+    dictationSubmitting = false;
+    answerInput.focus();
+  }
+
+  function renderDictationFeedback(panel, index, isCorrect, answer, correctChar, session) {
+    const feedbackArea = panel.querySelector(".dictation-feedback-area");
+    if (!feedbackArea) return;
+
+    feedbackArea.innerHTML = "";
+    const feedback = document.createElement("div");
+    feedback.className = `dictation-feedback ${isCorrect ? "is-correct" : "is-wrong"}`;
+
+    const title = document.createElement("p");
+    title.className = "dictation-feedback-title";
+    title.textContent = isCorrect ? "✅ 写对啦！" : "❌ 写错了";
+    feedback.append(title);
+
+    if (!isCorrect || dictationWrongAttempts > 0) {
+      const charEl = document.createElement("span");
+      charEl.className = "dictation-feedback-char";
+      charEl.textContent = correctChar;
+      feedback.append(charEl);
+    }
+
+    if (dictationWrongAttempts > 0 && isCorrect) {
+      const note = document.createElement("p");
+      note.style.cssText = "margin: 4px 0 0; color: var(--muted); font-size: 14px;";
+      note.textContent = `（改错了 ${dictationWrongAttempts} 次后改正）`;
+      feedback.append(note);
+    }
+
+    // Next button
+    const nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "dictation-next-btn";
+    nextBtn.textContent = index + 1 >= session.total_count ? "查看结果" : "下一题";
+    nextBtn.addEventListener("click", () => {
+      dictationCurrentState = null;
+      const nextIndex = index + 1;
+      if (nextIndex >= session.total_count) {
+        completeDictation(session);
+      } else {
+        session.current_index = nextIndex;
+        renderDictationQuestion(nextIndex);
+      }
+    });
+    feedback.append(nextBtn);
+
+    feedbackArea.append(feedback);
+
+    // Hide the answer form
+    const answerForm = panel.querySelector(".dictation-answer-form");
+    if (answerForm) answerForm.style.display = "none";
+
+    setTimeout(() => nextBtn.focus(), 100);
+  }
+
+  async function completeDictation(session) {
+    try {
+      const resp = await fetch("/api/dictation/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}"
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        loadDictationHistory();
+        renderDictationCompleteError(session, err.error || "保存结果失败，请稍后重试。");
+        return;
+      }
+      const data = await resp.json();
+      session.total = data.total;
+      session.correct = data.correct;
+      session.wrong_characters = data.wrong_characters;
+      session.accuracy = data.accuracy;
+    } catch {
+      loadDictationHistory();
+      renderDictationCompleteError(session, "无法连接到服务，结果未能保存。请确认本地服务正在运行。");
+      return;
+    }
+    loadDictationHistory();
+    renderDictationSummary(session);
+  }
+
+  function renderDictationCompleteError(session, errorMsg) {
+    cards.innerHTML = "";
+    dictationSession = null;
+
+    const panel = document.createElement("div");
+    panel.className = "dictation-panel";
+    const card = document.createElement("div");
+    card.className = "dictation-card";
+
+    const errorBox = document.createElement("div");
+    errorBox.style.cssText = "text-align: center; padding: 24px 16px;";
+
+    const title = document.createElement("h3");
+    title.style.cssText = "color: var(--brand); margin: 0 0 8px;";
+    title.textContent = "⚠️ 提交失败";
+    errorBox.append(title);
+
+    const msg = document.createElement("p");
+    msg.style.cssText = "color: var(--ink-soft); font-size: 16px; margin: 0 0 16px;";
+    msg.textContent = errorMsg;
+    errorBox.append(msg);
+
+    const retryBtn = document.createElement("button");
+    retryBtn.type = "button";
+    retryBtn.className = "dictation-retry-btn";
+    retryBtn.textContent = "重新提交";
+    retryBtn.addEventListener("click", () => {
+      completeDictation(session);
+    });
+    errorBox.append(retryBtn);
+
+    card.append(errorBox);
+    panel.append(card);
+    cards.append(panel);
+
+    const total = session.total_count || session.characters.length;
+    summary.textContent = `听写完成！共 ${total} 题，但结果保存失败。`;
+  }
+
+  function renderDictationSummary(session) {
+    cards.innerHTML = "";
+    dictationSession = null;
+
+    const panel = document.createElement("div");
+    panel.className = "dictation-panel";
+
+    const card = document.createElement("div");
+    card.className = "dictation-card";
+
+    // Summary header
+    const summaryEl = document.createElement("div");
+    summaryEl.className = "dictation-summary";
+
+    const score = document.createElement("div");
+    score.className = "dictation-summary-score";
+    const total = session.total_count || session.total || session.characters.length;
+    const correct = session.correct != null ? session.correct : (session.results ? session.results.filter(r => r.wrong_attempts === 0 && r.correct).length : 0);
+    const wrong = total - correct;
+    score.textContent = `听写完成！共 ${total} 题`;
+    summaryEl.append(score);
+
+    const accuracy = document.createElement("div");
+    accuracy.className = "dictation-summary-accuracy";
+    const acc = session.accuracy != null ? session.accuracy : (total > 0 ? Math.round(correct / total * 1000) / 10 : 0);
+    accuracy.textContent = `答对 ${correct} 题，答错 ${wrong} 题，正确率 ${acc}%`;
+    summaryEl.append(accuracy);
+
+    card.append(summaryEl);
+
+    // Detail rows
+    if (session.results && session.results.length) {
+      const detail = document.createElement("div");
+      detail.className = "dictation-summary-detail";
+
+      session.results.forEach(result => {
+        const row = document.createElement("div");
+        const firstTryCorrect = result.correct && result.wrong_attempts === 0;
+        row.className = `dictation-summary-row ${firstTryCorrect ? "is-correct" : "is-wrong"}`;
+
+        const char = document.createElement("span");
+        char.className = "dictation-summary-char";
+        char.textContent = result.character;
+        row.append(char);
+
+        const label = document.createElement("span");
+        label.className = "dictation-summary-label";
+        if (result.correct && result.wrong_attempts === 0) {
+          label.textContent = "一次写对 ✅";
+        } else if (result.correct) {
+          label.textContent = `改正后写对（错了 ${result.wrong_attempts} 次）`;
+        } else {
+          label.textContent = "写错 ❌";
+        }
+        row.append(label);
+
+        detail.append(row);
+      });
+
+      card.append(detail);
+    }
+
+    // Action buttons
+    const actions = document.createElement("div");
+    actions.className = "dictation-summary-actions";
+
+    const wrongChars = session.wrong_characters || (session.results ? session.results.filter(r => r.wrong_attempts > 0).map(r => r.character) : []);
+
+    if (wrongChars.length > 0) {
+      const retryBtn = document.createElement("button");
+      retryBtn.type = "button";
+      retryBtn.className = "dictation-retry-btn";
+      retryBtn.textContent = `错字重听（${wrongChars.length} 个）`;
+      retryBtn.addEventListener("click", async () => {
+        try {
+          const resp = await fetch("/api/dictation/start", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ characters: wrongChars, retry: true })
+          });
+          if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            alert(err.error || "启动失败");
+            return;
+          }
+          const data = await resp.json();
+          dictationSession = { characters: data.characters, total_count: data.total_count, current_index: 0, results: [] };
+          renderDictationQuestion(0);
+        } catch {
+          alert("无法连接到服务");
+        }
+      });
+      actions.append(retryBtn);
+    }
+
+    const newBtn = document.createElement("button");
+    newBtn.type = "button";
+    newBtn.className = "dictation-new-btn";
+    newBtn.textContent = "再来一次";
+    newBtn.addEventListener("click", () => {
+      renderDictationSetup();
+    });
+    actions.append(newBtn);
+
+    card.append(actions);
+    panel.append(card);
+    cards.append(panel);
+
+    summary.textContent = `听写完成！共 ${total} 题，正确率 ${acc}%。`;
   }
 
   function createEmptyState(sourceText) {
@@ -1230,4 +2329,5 @@
   renderCharacters(defaultCharacters, defaultCharacters.join(""));
   updateClearInputButton();
   loadHistory();
+  loadDictationHistory();
 })();
