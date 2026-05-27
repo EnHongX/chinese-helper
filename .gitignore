@@ -4,3 +4,6 @@ data/vendor/
 data/generated/chars/
 data/generated/manifest.json
 __pycache__/
+node_modules/
+test-results/
+package-lock.json
