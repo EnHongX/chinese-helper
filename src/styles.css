@@ -1291,6 +1291,516 @@ h1 {
   font-size: 16px;
 }
 
+/* ============== 听写复习 ============== */
+
+.dictation-setup {
+  display: grid;
+  gap: 22px;
+  padding: 28px;
+  background: var(--paper);
+  border: 2px solid var(--brand-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.dictation-char-source h3,
+.dictation-history-section h3 {
+  margin: 0 0 14px;
+  font-family: var(--font-zh);
+  font-size: 22px;
+  color: var(--brand);
+}
+
+.dictation-chip-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.dictation-char-chip {
+  width: 52px;
+  height: 52px;
+  border: 2.5px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-zh);
+  font-size: 28px;
+  font-weight: 700;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+
+.dictation-char-chip:hover {
+  border-color: var(--brand);
+  transform: translateY(-2px);
+}
+
+.dictation-char-chip.selected {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(230, 83, 60, 0.3);
+}
+
+.dictation-empty-tip {
+  margin: 0;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.dictation-input-section {
+  display: grid;
+  gap: 12px;
+}
+
+.dictation-input-label {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink-soft);
+}
+
+.dictation-input {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 20px;
+  border: 2.5px solid var(--line);
+  border-radius: var(--radius);
+  background: #fffdf9;
+  color: var(--ink);
+  font-family: var(--font-zh);
+  font-size: 22px;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dictation-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 5px var(--brand-soft);
+}
+
+.dictation-start-btn,
+.dictation-retry-btn,
+.dictation-new-btn {
+  min-height: 56px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: #ffffff;
+  font-family: var(--font-zh);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 4px 12px rgba(230, 83, 60, 0.28);
+}
+
+.dictation-start-btn:hover,
+.dictation-retry-btn:hover,
+.dictation-new-btn:hover {
+  background: var(--brand-dark);
+  transform: translateY(-1px);
+}
+
+.dictation-start-btn:disabled,
+.dictation-retry-btn:disabled {
+  cursor: not-allowed;
+  background: var(--bg-soft);
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.dictation-toast {
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--yellow-soft);
+  border-left: 4px solid var(--yellow);
+  color: var(--ink-soft);
+  font-size: 16px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dictation-toast.show {
+  opacity: 1;
+}
+
+.dictation-session {
+  display: grid;
+  gap: 22px;
+}
+
+.dictation-progress {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  background: var(--paper);
+  border: 2px solid var(--brand-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dictation-progress strong {
+  color: var(--brand);
+  font-size: 22px;
+}
+
+.dictation-progress-bar {
+  flex: 1 1 auto;
+  height: 10px;
+  background: var(--bg-soft);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.dictation-progress-fill {
+  height: 100%;
+  background: var(--brand);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.dictation-question-card {
+  display: grid;
+  gap: 18px;
+  padding: 32px;
+  background: var(--paper);
+  border: 2px solid var(--brand-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.dictation-listen-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 64px;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  border: 2.5px solid var(--blue);
+  border-radius: var(--radius);
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-family: var(--font-zh);
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dictation-listen-btn:hover {
+  background: var(--blue);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(74, 144, 194, 0.35);
+}
+
+.dictation-listen-btn .speak-icon {
+  font-size: 26px;
+}
+
+.dictation-hint-area {
+  text-align: center;
+}
+
+.dictation-hint-btn {
+  min-height: 40px;
+  padding: 0 20px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+.dictation-hint-btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.dictation-hint-btn:disabled {
+  cursor: default;
+}
+
+.dictation-hint-text {
+  margin: 10px 0 0;
+  padding: 12px 18px;
+  background: var(--yellow-soft);
+  border-radius: var(--radius-sm);
+  color: var(--ink-soft);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.dictation-answer-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.dictation-answer-input {
+  min-height: 60px;
+  padding: 0 20px;
+  border: 2.5px solid var(--line);
+  border-radius: var(--radius);
+  background: #fffdf9;
+  color: var(--ink);
+  font-family: var(--font-zh);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.dictation-answer-input:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 5px var(--brand-soft);
+}
+
+.dictation-answer-input:disabled {
+  background: var(--bg-soft);
+  color: var(--muted);
+}
+
+.dictation-submit-btn {
+  min-height: 60px;
+  min-width: 100px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--brand);
+  color: #ffffff;
+  font-family: var(--font-zh);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+  box-shadow: 0 4px 12px rgba(230, 83, 60, 0.28);
+}
+
+.dictation-submit-btn:hover:not(:disabled) {
+  background: var(--brand-dark);
+  transform: translateY(-1px);
+}
+
+.dictation-submit-btn:disabled {
+  cursor: not-allowed;
+  background: var(--bg-soft);
+  color: var(--muted);
+  box-shadow: none;
+}
+
+.dictation-feedback {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 22px;
+  border-radius: var(--radius);
+  font-family: var(--font-zh);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+
+.dictation-feedback.correct {
+  background: var(--green-soft);
+  border: 2px solid var(--green);
+  color: #2c5b22;
+}
+
+.dictation-feedback.wrong {
+  background: var(--brand-soft);
+  border: 2px solid var(--brand);
+  color: var(--brand-dark);
+}
+
+.dictation-feedback-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.dictation-next-btn {
+  margin-left: auto;
+  min-height: 44px;
+  padding: 0 22px;
+  border: 2px solid var(--blue);
+  border-radius: 999px;
+  background: var(--blue);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.dictation-next-btn:hover {
+  background: #3a7dae;
+  transform: translateY(-1px);
+}
+
+.dictation-summary {
+  display: grid;
+  gap: 22px;
+}
+
+.dictation-summary-header {
+  padding: 28px;
+  background: var(--paper);
+  border: 2px solid var(--brand-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.dictation-summary-header h3 {
+  margin: 0 0 16px;
+  font-family: var(--font-zh);
+  font-size: 28px;
+  color: var(--brand);
+}
+
+.dictation-all-correct {
+  margin-bottom: 16px;
+}
+
+.dictation-all-correct-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.dictation-all-correct h3 {
+  margin: 0;
+  font-family: var(--font-zh);
+  font-size: 26px;
+  color: var(--green);
+}
+
+.dictation-score-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+}
+
+.dictation-score-item {
+  padding: 10px 18px;
+  background: var(--blue-soft);
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.dictation-score-item strong {
+  color: var(--brand);
+  font-size: 20px;
+}
+
+.dictation-wrong-section {
+  padding: 24px;
+  background: var(--paper);
+  border: 2px solid var(--brand-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.dictation-wrong-section h4 {
+  margin: 0 0 14px;
+  font-family: var(--font-zh);
+  font-size: 20px;
+  color: var(--brand);
+}
+
+.dictation-wrong-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.dictation-wrong-row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 18px;
+  background: var(--brand-soft);
+  border-radius: var(--radius-sm);
+  font-size: 18px;
+}
+
+.dictation-wrong-correct strong {
+  font-family: var(--font-zh);
+  font-size: 24px;
+  color: var(--green);
+}
+
+.dictation-wrong-answer strong {
+  font-family: var(--font-zh);
+  font-size: 24px;
+  color: var(--brand);
+}
+
+.dictation-summary-actions {
+  display: grid;
+  gap: 12px;
+}
+
+.dictation-results-slot {
+  margin-top: 22px;
+}
+
+.dictation-history-section {
+  padding: 24px;
+  background: var(--paper);
+  border: 2px solid var(--brand-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.dictation-history-list {
+  display: grid;
+  gap: 10px;
+}
+
+.dictation-history-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  background: var(--blue-soft);
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 600;
+  flex-wrap: wrap;
+}
+
+.dictation-history-time {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.dictation-history-score {
+  color: var(--ink);
+}
+
+.dictation-history-wrong {
+  color: var(--brand);
+}
+
 /* ============== 工具 ============== */
 
 .sr-only {
@@ -1395,6 +1905,20 @@ h1 {
 
   .history-filters {
     grid-template-columns: 1fr;
+  }
+
+  .dictation-answer-form {
+    grid-template-columns: 1fr;
+  }
+
+  .dictation-question-card {
+    padding: 20px;
+  }
+
+  .dictation-char-chip {
+    width: 46px;
+    height: 46px;
+    font-size: 24px;
   }
 }
 
