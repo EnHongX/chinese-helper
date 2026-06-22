@@ -7,8 +7,15 @@
   const resultsTitle = document.querySelector("#results-title");
   const searchTitle = document.querySelector("#search-title");
   const searchDescription = document.querySelector("#search-description");
+  const headerEyebrow = document.querySelector(".header-title .eyebrow");
+  const headerTitle = document.querySelector(".header-title h1");
+  const homePanel = document.querySelector(".home-panel");
   const searchPanel = document.querySelector(".search-panel");
+  const resultsSection = document.querySelector(".results-section");
+  const featureNav = document.querySelector(".feature-nav");
   const printButton = document.querySelector("#print-button");
+  const subjectNavItems = document.querySelectorAll(".subject-nav-item");
+  const subjectEntryCards = document.querySelectorAll(".subject-entry-card");
   const navItems = document.querySelectorAll(".nav-item");
   const template = document.querySelector("#character-card-template");
   const simpleTemplate = document.querySelector("#simple-card-template");
@@ -20,6 +27,7 @@
   const nextBtn = pager.querySelector(".pager-nav.next");
 
   const defaultCharacters = ["小", "学", "语", "文"];
+  let currentSubject = "home";
   let currentFeature = "hanzi";
   let historyItems = [];
   let currentCharacters = [];
@@ -153,6 +161,25 @@
     words: "组词",
     sentences: "造句",
     history: "记录"
+  };
+
+  const subjectCopy = {
+    home: {
+      eyebrow: "今天想练什么？",
+      title: "小学生学习助手"
+    },
+    chinese: {
+      eyebrow: "语文小课堂",
+      title: "小学语文助手"
+    },
+    math: {
+      eyebrow: "数学练习本",
+      title: "小学数学助手"
+    },
+    english: {
+      eyebrow: "English time",
+      title: "小学英文助手"
+    }
   };
 
   const phraseData = new Map([
@@ -888,7 +915,106 @@
     }
   }
 
+  function setSubjectChrome(subject) {
+    currentSubject = subject;
+    const copy = subjectCopy[subject] || subjectCopy.home;
+    headerEyebrow.textContent = copy.eyebrow;
+    headerTitle.textContent = copy.title;
+    document.body.classList.remove("theme-home", "theme-chinese", "theme-math", "theme-english");
+    document.body.classList.add(`theme-${subject}`);
+
+    subjectNavItems.forEach((item) => {
+      const isActive = item.dataset.subject === subject;
+      item.classList.toggle("active", isActive);
+      if (isActive) {
+        item.setAttribute("aria-current", "page");
+      } else {
+        item.removeAttribute("aria-current");
+      }
+    });
+  }
+
+  function renderSubjectLanding(subject) {
+    cards.innerHTML = "";
+    pager.hidden = true;
+    resultsSection.hidden = false;
+    searchPanel.hidden = true;
+    featureNav.hidden = true;
+    printButton.hidden = true;
+
+    const subjectDetails = {
+      math: {
+        title: "数学",
+        summaryText: "先保留口算练习入口，后续再接题型和记录。",
+        cards: [
+          ["口算练习", "加减乘除的快速练习入口。"],
+          ["错题整理", "后续用于回看做错的题。"],
+          ["学习记录", "后续按日期查看练习情况。"]
+        ]
+      },
+      english: {
+        title: "英文",
+        summaryText: "先保留单词学习入口，后续再接词库、朗读和例句。",
+        cards: [
+          ["单词卡片", "查看单词、中文释义和例句。"],
+          ["听读练习", "后续用于跟读和听写。"],
+          ["学习记录", "后续记录每天学过的单词。"]
+        ]
+      }
+    };
+
+    const detail = subjectDetails[subject];
+    resultsTitle.textContent = `${detail.title}学习入口`;
+    summary.textContent = detail.summaryText;
+
+    const panel = document.createElement("div");
+    panel.className = `subject-placeholder ${subject}-placeholder`;
+
+    detail.cards.forEach(([titleText, bodyText]) => {
+      const card = document.createElement("article");
+      card.className = "placeholder-card";
+      const title = document.createElement("h3");
+      title.textContent = titleText;
+      const body = document.createElement("p");
+      body.textContent = bodyText;
+      card.append(title, body);
+      panel.append(card);
+    });
+
+    cards.append(panel);
+  }
+
+  function setSubject(subject) {
+    setSubjectChrome(subject);
+
+    if (subject === "home") {
+      homePanel.hidden = false;
+      featureNav.hidden = true;
+      searchPanel.hidden = true;
+      resultsSection.hidden = true;
+      pager.hidden = true;
+      return;
+    }
+
+    homePanel.hidden = true;
+    resultsSection.hidden = false;
+
+    if (subject === "chinese") {
+      featureNav.hidden = false;
+      printButton.hidden = false;
+      setFeature(currentFeature || "hanzi");
+      return;
+    }
+
+    renderSubjectLanding(subject);
+  }
+
   function setFeature(feature) {
+    setSubjectChrome("chinese");
+    homePanel.hidden = true;
+    featureNav.hidden = false;
+    resultsSection.hidden = false;
+    printButton.hidden = false;
     currentFeature = feature;
     const copy = featureCopy[feature];
     searchTitle.textContent = copy.title;
@@ -1193,6 +1319,18 @@
     renderCurrentFeature("", false);
   });
 
+  subjectNavItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      setSubject(item.dataset.subject);
+    });
+  });
+
+  subjectEntryCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      setSubject(card.dataset.homeSubject);
+    });
+  });
+
   navItems.forEach((item) => {
     item.addEventListener("click", () => {
       setFeature(item.dataset.feature);
@@ -1227,7 +1365,7 @@
     }
   });
 
-  renderCharacters(defaultCharacters, defaultCharacters.join(""));
+  setSubject("home");
   updateClearInputButton();
   loadHistory();
 })();

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>小学语文助手</title>
+    <title>小学生学习助手</title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js" as="script" crossorigin />
     <link rel="stylesheet" href="./src/styles.css" />
@@ -12,20 +12,53 @@
     <header class="app-header">
       <div class="header-inner">
         <div class="header-title">
-          <p class="eyebrow">你的语文小伙伴</p>
-          <h1>小学语文助手</h1>
+          <p class="eyebrow">今天想练什么？</p>
+          <h1>小学生学习助手</h1>
         </div>
-        <nav class="feature-nav" aria-label="功能导航">
-          <button class="nav-item active" type="button" data-feature="hanzi" aria-current="page">汉字</button>
-          <button class="nav-item" type="button" data-feature="meaning">字义</button>
-          <button class="nav-item" type="button" data-feature="words">组词</button>
-          <button class="nav-item" type="button" data-feature="sentences">造句</button>
-          <button class="nav-item" type="button" data-feature="history">记录</button>
+        <nav class="subject-nav" aria-label="学科导航">
+          <button class="subject-nav-item active" type="button" data-subject="home" aria-current="page">首页</button>
+          <button class="subject-nav-item" type="button" data-subject="chinese">语文</button>
+          <button class="subject-nav-item" type="button" data-subject="math">数学</button>
+          <button class="subject-nav-item" type="button" data-subject="english">英文</button>
         </nav>
       </div>
     </header>
 
     <main class="page-shell">
+      <section class="home-panel" aria-labelledby="home-title">
+        <div class="home-copy">
+          <p class="eyebrow">学生学习入口</p>
+          <h2 id="home-title">小学生学习助手</h2>
+          <p>语文、数学、英文，每天练一点。</p>
+        </div>
+        <div class="subject-entry-grid">
+          <button class="subject-entry-card chinese-card" type="button" data-home-subject="chinese">
+            <span class="entry-kicker">语文</span>
+            <strong>汉字、拼音、笔顺、听写</strong>
+            <span>继续学习已有内容</span>
+          </button>
+          <button class="subject-entry-card math-card" type="button" data-home-subject="math">
+            <span class="entry-kicker">数学</span>
+            <strong>口算练习入口</strong>
+            <span>先占位，不做复杂题库</span>
+          </button>
+          <button class="subject-entry-card english-card" type="button" data-home-subject="english">
+            <span class="entry-kicker">英文</span>
+            <strong>单词学习入口</strong>
+            <span>先占位，后续接单词卡</span>
+          </button>
+        </div>
+      </section>
+
+      <nav class="feature-nav" aria-label="语文功能导航" hidden>
+        <button class="nav-item active" type="button" data-feature="hanzi" aria-current="page">汉字</button>
+        <button class="nav-item" type="button" data-feature="meaning">字义</button>
+        <button class="nav-item" type="button" data-feature="words">组词</button>
+        <button class="nav-item" type="button" data-feature="sentences">造句</button>
+        <button class="nav-item" type="button" data-feature="history">记录</button>
+        <button class="nav-item" type="button" data-feature="dictation">听写</button>
+      </nav>
+
       <section class="search-panel" aria-labelledby="search-title">
         <div class="search-copy">
           <h2 id="search-title">输入要学习的汉字</h2>
