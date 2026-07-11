@@ -9,6 +9,10 @@ echo "=== Running backend tests ==="
 python3 tests/test_backend.py -v || EXIT=1
 
 echo ""
+echo "=== Running backend layer tests ==="
+python3 tests/test_backend_layers.py -v || EXIT=1
+
+echo ""
 echo "=== Running build data tests ==="
 python3 tests/test_build_data.py -v || EXIT=1
 
